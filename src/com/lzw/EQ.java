@@ -168,19 +168,20 @@ public class EQ extends Dialog {
 			System.exit(0);
 		}
 		{ // 初始化公共信息按钮
+			//其实消息通知就是一个gif呀
 			messageAlertIcon = new ImageIcon(EQ.class
 					.getResource("/image/messageAlert.gif"));  //初始化公告信息按钮
 			messageAlertNullIcon = new ImageIcon(EQ.class
 					.getResource("/image/messageAlertNull20.gif"));
 			messageStack = new Stack<String>();
 			messageAlertButton = new JButton();
-			messageAlertButton.setHorizontalAlignment(SwingConstants.RIGHT);
+			messageAlertButton.setHorizontalAlignment(SwingConstants.RIGHT);//小喇叭位置
 			messageAlertButton.setContentAreaFilled(false);
 			final JPanel BannerPanel = new JPanel();
 			BannerPanel.setLayout(new BorderLayout());
 			add(BannerPanel, BorderLayout.NORTH);
 			userInfoButton = new JButton();
-			BannerPanel.add(userInfoButton, BorderLayout.WEST);
+			BannerPanel.add(userInfoButton, BorderLayout.WEST); //本机最上面排头像位置
 			userInfoButton.setMargin(new Insets(0, 0, 0, 10));
 			initUserInfoButton();// 初始化本地用户头像按钮
 			BannerPanel.add(messageAlertButton, BorderLayout.CENTER);
@@ -389,16 +390,19 @@ public class EQ extends Dialog {
 			String ip = InetAddress.getLocalHost().getHostAddress();  //获取本地IP
 			User user = dao.getUser(ip);   
 			userInfoButton.setIcon(user.getIconImg());
-			userInfoButton.setText(user.getName());
+			userInfoButton.setText(user.getName());  //显示本机名
 			userInfoButton.setIconTextGap(JLabel.RIGHT); //设置文本显示在头像右侧
-			userInfoButton.setToolTipText(user.getTipText());   //设置提示文本
-			userInfoButton.getParent().doLayout();
+			userInfoButton.setToolTipText(user.getTipText());   //设置提示文本，鼠标放在本机头像上能有提示IP
+			userInfoButton.getParent().doLayout();   
 		} catch (UnknownHostException e1) {
 			e1.printStackTrace();
 		}
 	}
-
-	private void showMessageBar() { // 显示公告信息按钮的线程
+	/*
+	 * 显示公告信息按钮的线程,这是一段很经典的代码随时刷新
+	 * 其实就是在不断的变换两个图像
+	 */
+	private void showMessageBar() { 
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
@@ -407,7 +411,7 @@ public class EQ extends Dialog {
 							messageAlertButton.setIcon(messageAlertNullIcon);
 							messageAlertButton.setPreferredSize(new Dimension(
 									20, 20));
-							Thread.sleep(500);
+							Thread.sleep(500);  //睡眠500毫秒之后才换
 							messageAlertButton.setIcon(messageAlertIcon);
 							Thread.sleep(500);
 						} catch (InterruptedException e) {
@@ -424,8 +428,12 @@ public class EQ extends Dialog {
 			}
 		}).start();
 	}
-
-	private void checkSysInfo(final JLabel updateInfo) {// 检测版本更新
+/*
+ * 检测版本的更新
+ * 还能html显示，吊呀
+ * 线程来做的
+ */
+	private void checkSysInfo(final JLabel updateInfo) {
 		new Thread(new Runnable() {
 			public void run() {
 				String info = "";

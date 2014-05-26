@@ -1,8 +1,8 @@
-2014-05-26 07:40:50.704 GMT Thread[main,5,main] Cleanup action starting
+2014-05-26 13:13:18.953 GMT Thread[main,5,main] Cleanup action starting
 java.sql.SQLException: Failed to start database 'db_EQ', see the next exception for details.
 	at org.apache.derby.impl.jdbc.SQLExceptionFactory40.getSQLException(Unknown Source)
-	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
-	at org.apache.derby.impl.jdbc.Util.seeNextException(Unknown Source)
+	at org.apache.derby.impl.jdbcDatabase Class Loader started - derby.database.classpath=''
+rby.impl.jdbc.Util.seeNextException(Unknown Source)
 	at org.apache.derby.impl.jdbc.EmbedConnection.bootDatabase(Unknown Source)
 	at org.apache.derby.impl.jdbc.EmbedConnection.<init>(Unknown Source)
 	at org.apache.derby.impl.jdbc.EmbedConnection30.<init>(Unknown Source)
