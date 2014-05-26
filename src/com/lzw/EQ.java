@@ -83,91 +83,93 @@ import com.lzw.userList.ChatTree;
 import com.lzw.userList.User;
 
 public class EQ extends Dialog {
-	private JTextField ipEndTField;
-	private JTextField ipStartTField;
-	private JTextField userNameTField;
-	private JPasswordField passwordTField;
-	private JTextField placardPathTField;
-	private JTextField updatePathTField;
-	private JTextField pubPathTField;
-	public static EQ frame = null;
-	private ChatTree chatTree;
-	private JPopupMenu popupMenu;
-	private JTabbedPane tabbedPane;
-	private JToggleButton searchUserButton;
-	private JProgressBar progressBar;
-	private JList faceList;
-	private JButton selectInterfaceOKButton;
-	private DatagramSocket ss;
-	private final JLabel stateLabel;
-	private static String user_dir;
-	private static File localFile;
-	private static File netFile;
-	private String netFilePath;
-	private JButton messageAlertButton;
-	private Stack<String> messageStack;  //消息栈
-	private ImageIcon messageAlertIcon;
-	private ImageIcon messageAlertNullIcon;
-	private Rectangle location;
-	public static TrayIcon trayicon;
+	
+	private JTextField ipEndTField;    //起始IP
+	private JTextField ipStartTField;  //终止Ip
+	private JTextField userNameTField;  //用户名文本框
+	private JPasswordField passwordTField;  //密码
+	private JTextField placardPathTField;  //系统公告文本框
+	private JTextField updatePathTField;   //程序升级文本框
+	private JTextField pubPathTField;   //公共程序文本框
+	public static EQ frame = null;      //主窗体对象
+	private ChatTree chatTree;          //用户树对象
+	private JPopupMenu popupMenu;        //弹出菜单选项，点击右键时候弹出来的选项
+	private JTabbedPane tabbedPane;    //选项卡
+	private JToggleButton searchUserButton; //搜索用户按钮
+	private JProgressBar progressBar;   //搜索进度条
+	private JList faceList;    //搜索列表
+	private JButton selectInterfaceOKButton;   //界面选择按钮
+	private DatagramSocket ss;    //数据通信包
+	private final JLabel stateLabel;   //状态栏标签
+	private static String user_dir;   //用户当前文件夹
+	private static File localFile;   //本地文件
+	private static File netFile;     //升级路径上的网络文件
+	private String netFilePath;     //升级文件路径
+	private JButton messageAlertButton;  //公告消息按钮
+	private Stack<String> messageStack;  //公告消息栈
+	private ImageIcon messageAlertIcon;   //公告信息图标
+	private ImageIcon messageAlertNullIcon;  //公告信息空图标
+	private Rectangle location;  //窗体位置
+	public static TrayIcon trayicon;  //系统托盘
 	private Dao dao;
 	/*
 	 * systemRoot()得到以注册表路径HKEY_LOCAL_MACHINE\SOFTWARE\Javasoft\Prefs
 	 *  为根结点的Preferences对象
 	 *  建立一个注册表项目
 	 */
-	public final static Preferences preferences = Preferences.systemRoot();
+	public final static Preferences preferences = Preferences.systemRoot();  //首选项
 	
-	private JButton userInfoButton;
+	private JButton userInfoButton;   //本地用户按钮
 	public static void main(String args[]) {
 		try {
-			String laf = preferences.get("lookAndFeel", "java默认");
-			if (laf.indexOf("当前系统")>-1)
+			String laf = preferences.get("lookAndFeel", "java默认");   //获取用户选择的外观
+			if (laf.indexOf("当前系统")>-1)     //为啥>-1??
 				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-			EQ frame = new EQ();
-			frame.setVisible(true);
-			frame.SystemTrayInitial();// 初始化系统栏
-			frame.server();
-			frame.checkPlacard();
+						.getSystemLookAndFeelClassName());       //设置外观
+			EQ frame = new EQ();          //创建主窗体对象
+			frame.setVisible(true);      //显示窗体
+			frame.SystemTrayInitial();  // 初始化系统栏
+			frame.server();            //启动服务端口
+			frame.checkPlacard();     //检测系统公告
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	public EQ() {
-		super(new Frame());
+		super(new Frame());             //初始化窗体对象
 		frame = this;
 		dao = Dao.getDao();
-		location = dao.getLocation();
-		setTitle("EQ通讯");
-		setBounds(location);
-		progressBar = new JProgressBar();
+		location = dao.getLocation();   //初始化窗体位置对象
+		setTitle("EQ通讯");    
+		setBounds(location);            //设置窗体位置
+		progressBar = new JProgressBar();   //初始化用户搜索进度条
 		progressBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
-		tabbedPane = new JTabbedPane();
-		popupMenu = new JPopupMenu();
-		chatTree = new ChatTree(this);
-		user_dir = System.getProperty("user.dir"); // 程序执行路径用于系统更新
+		tabbedPane = new JTabbedPane();   //初始化选项卡
+		popupMenu = new JPopupMenu();     //初始化弹出菜单
+		chatTree = new ChatTree(this);      
+		user_dir = System.getProperty("user.dir"); // 程序执行路径用于系统更新，用户当前路径EQ
 		localFile = new File(user_dir + File.separator + "EQ.jar");// 本地EQ文件
 		stateLabel = new JLabel(); // 状态栏标签
 		addWindowListener(new FrameWindowListener());// 添加窗体监视器
 		addComponentListener(new ComponentAdapter() {
-			public void componentResized(final ComponentEvent e) {
+			public void componentResized(final ComponentEvent e) {   //当窗体改变大小时候
 				saveLocation();
 			}
 			public void componentMoved(final ComponentEvent e) {
+				//当窗体位置改变的时候
 				saveLocation();
 			}
 		});
 		try {// 启动通讯服务端口
-			ss = new DatagramSocket(1111);
+			ss = new DatagramSocket(1111);   //初始化服务器
 		} catch (SocketException e2) {
 			if (e2.getMessage().startsWith("Address already in use"))
-				showMessageDialog("服务端口被占用,或者本软件已经运行。");
+				showMessageDialog("服务端口被占用,或者本软件已经运行。");  //弹出提示框告诉
 			System.exit(0);
 		}
 		{ // 初始化公共信息按钮
 			messageAlertIcon = new ImageIcon(EQ.class
-					.getResource("/image/messageAlert.gif"));
+					.getResource("/image/messageAlert.gif"));  //初始化公告信息按钮
 			messageAlertNullIcon = new ImageIcon(EQ.class
 					.getResource("/image/messageAlertNull20.gif"));
 			messageStack = new Stack<String>();
@@ -182,28 +184,28 @@ public class EQ extends Dialog {
 			userInfoButton.setMargin(new Insets(0, 0, 0, 10));
 			initUserInfoButton();// 初始化本地用户头像按钮
 			BannerPanel.add(messageAlertButton, BorderLayout.CENTER);
-			messageAlertButton.addActionListener(new ActionListener() {
+			messageAlertButton.addActionListener(new ActionListener() {   //添加公告信息按钮监听器
 				public void actionPerformed(final ActionEvent e) {
 					if (!messageStack.empty()) {
-						showMessageDialog(messageStack.pop());
+						showMessageDialog(messageStack.pop());    //显示公告信息
 					}
 				}
 			});
 			messageAlertButton.setIcon(messageAlertIcon);
 			showMessageBar();
 		}
-		add(tabbedPane, BorderLayout.CENTER);
+		add(tabbedPane, BorderLayout.CENTER);   //初始化选项卡面板
 		tabbedPane.setTabPlacement(SwingConstants.LEFT);
 		ImageIcon userTicon = new ImageIcon(EQ.class
-				.getResource("/image/tabIcon/tabLeft.PNG"));
+				.getResource("/image/tabIcon/tabLeft.PNG"));  //创建用户列表图标
 		tabbedPane.addTab(null, userTicon, createUserList(), "用户列表");
-		ImageIcon sysOTicon = new ImageIcon(EQ.class
+		ImageIcon sysOTicon = new ImageIcon(EQ.class       //创建系统操作图标
 				.getResource("/image/tabIcon/tabLeft2.PNG"));
-		tabbedPane.addTab(null, sysOTicon, createSysToolPanel(), "系统操作");
+		tabbedPane.addTab(null, sysOTicon, createSysToolPanel(), "系统操作");   //添加系统操作选项卡
 		ImageIcon sysSTicon = new ImageIcon(EQ.class
-				.getResource("/image/tabIcon/tabLeft3.png"));
-		tabbedPane.addTab(null, sysSTicon, createSysSetPanel(), "系统设置");
-		setAlwaysOnTop(true);
+				.getResource("/image/tabIcon/tabLeft3.png"));   //创建系统设置图标
+		tabbedPane.addTab(null, sysSTicon, createSysSetPanel(), "系统设置");  //添加系统设置选项卡
+		setAlwaysOnTop(true);   //窗体显示在最顶端
 	}
 
 	private JScrollPane createSysSetPanel() {
@@ -384,12 +386,12 @@ public class EQ extends Dialog {
 
 	private void initUserInfoButton() {// 初始化用户信息按钮
 		try {
-			String ip = InetAddress.getLocalHost().getHostAddress();
-			User user = dao.getUser(ip);
+			String ip = InetAddress.getLocalHost().getHostAddress();  //获取本地IP
+			User user = dao.getUser(ip);   
 			userInfoButton.setIcon(user.getIconImg());
 			userInfoButton.setText(user.getName());
-			userInfoButton.setIconTextGap(JLabel.RIGHT);
-			userInfoButton.setToolTipText(user.getTipText());
+			userInfoButton.setIconTextGap(JLabel.RIGHT); //设置文本显示在头像右侧
+			userInfoButton.setToolTipText(user.getTipText());   //设置提示文本
 			userInfoButton.getParent().doLayout();
 		} catch (UnknownHostException e1) {
 			e1.printStackTrace();
@@ -603,8 +605,8 @@ public class EQ extends Dialog {
 		});
 	}
 	private void saveLocation() { // 保存主窗体位置的方法
-		location = getBounds();
-		dao.updateLocation(location);
+		location = getBounds();  //获取窗体位置和大小
+		dao.updateLocation(location);   //调用updateLocation方法
 	}
 	protected JPopupMenu getPopupMenu() {// 创建用户弹出菜单
 		if (popupMenu == null) {
@@ -687,23 +689,23 @@ public class EQ extends Dialog {
 	}
 
 	private void checkPlacard() { // 检测公告信息方法
-		String placardDir = preferences.get("placardPath", null);
+		String placardDir = preferences.get("placardPath", null);  //获取公告路径
 		if (placardDir == null) {
 			pushMessage("未设置公告路径");
 			return;
 		}
-		File placard = new File(placardDir);
+		File placard = new File(placardDir);   //创建公告文件对象
 		try {
 			if (placard.exists() && placard.isFile()) {
 				StringBuilder placardStr = new StringBuilder();
 				Scanner sc = new Scanner(new FileInputStream(placard));
-				while (sc.hasNextLine()) {
+				while (sc.hasNextLine()) {   //读取文件公告内容
 					placardStr.append(sc.nextLine());
 				}
 				pushMessage(placardStr.toString());
 			}
 		} catch (FileNotFoundException e) {
-			pushMessage("公告路径错误，或公告文件不存在");
+			pushMessage("公告路径错误，或公告文件不存在");  //堆压公告信息
 		}
 	}
 

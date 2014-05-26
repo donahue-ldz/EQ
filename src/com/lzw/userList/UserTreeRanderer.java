@@ -21,6 +21,9 @@ import javax.swing.tree.TreeCellRenderer;
 
 import com.lzw.EQ;
 import com.lzw.dao.Dao;
+/*
+ * 自定义渲染器
+ */
 public class UserTreeRanderer extends JPanel implements TreeCellRenderer {
 	private Icon openIcon, closedIcon, leafIcon; //节点图标
 	private String tipText = "";
@@ -28,7 +31,7 @@ public class UserTreeRanderer extends JPanel implements TreeCellRenderer {
 	private final JLabel headImg = new JLabel();   //用户头像
 	private static User user;    //用户对象
 	public UserTreeRanderer() {
-		super();
+		super();  //父类的构造函数
 		user = null;
 	}
 	public UserTreeRanderer(Icon open, Icon closed, Icon leaf) {
@@ -40,7 +43,7 @@ public class UserTreeRanderer extends JPanel implements TreeCellRenderer {
 		URL trueUrl = EQ.class                   //选择用户图标
 				.getResource("/image/chexkBoxImg/CheckBoxTrue.png");
 		label.setSelectedIcon(new ImageIcon(trueUrl));
-		URL falseUrl = EQ.class      //取消用户图标
+		URL falseUrl = EQ.class      //取消用户图标，注意使用方法EQ.class
 				.getResource("/image/chexkBoxImg/CheckBoxFalse.png");
 		label.setIcon(new ImageIcon(falseUrl));
 		label.setForeground(new Color(0, 64, 128));
@@ -57,12 +60,13 @@ public class UserTreeRanderer extends JPanel implements TreeCellRenderer {
 	 * 选择节点时候刚方法使用指定颜色设置节点边框
 	 * 
 	 */
+//这个类有点迷惑
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
 		if (value instanceof DefaultMutableTreeNode) {      //判断value是否是节点
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;   
-			Object uo = node.getUserObject();   //获取节点信息
+			Object uo = node.getUserObject();   //获取节点信息Returns this node's user object
 			if (uo instanceof User)           //如果该数据是user类的实例的话
 				user = (User) uo;            //初始化user对象
 		} else if (value instanceof User)    //如果value是user类的实例
