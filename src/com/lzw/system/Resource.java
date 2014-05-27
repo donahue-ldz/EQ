@@ -82,6 +82,9 @@ public class Resource {
 			button.setSelected(false);
 		}
 	}
+	/*
+	 * 登陆模块
+	 */
 	public static boolean loginPublic(String user, String pass) {
 		try {
 			String userName = user;

@@ -195,8 +195,13 @@ public class EQ extends Dialog {
 			messageAlertButton.setIcon(messageAlertIcon);
 			showMessageBar();
 		}
-		add(tabbedPane, BorderLayout.CENTER);   //初始化选项卡面板
-		tabbedPane.setTabPlacement(SwingConstants.LEFT);
+		/*
+		 * 这就是界面的左边的选项
+		 * jtabbedpane就是为了使得在不同的选项之间能快速切换
+		 * 这里可以不断调节使得自己看起来很舒服
+		 */
+		add(tabbedPane, BorderLayout.CENTER);   //初始化选项卡面板在界面布局
+		tabbedPane.setTabPlacement(SwingConstants.LEFT);  //设置切换卡的位置
 		ImageIcon userTicon = new ImageIcon(EQ.class
 				.getResource("/image/tabIcon/tabLeft.PNG"));  //创建用户列表图标
 		tabbedPane.addTab(null, userTicon, createUserList(), "用户列表");
@@ -283,18 +288,22 @@ public class EQ extends Dialog {
 		sysSetPanel.add(ipOKButton);
 		return scrollPane;
 	}
-
-	private JScrollPane createUserList() {// 用户列表面板
+/*
+ * 用户列表面板,显示chattree
+ */
+	private JScrollPane createUserList() {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane
-				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);//水平滚动条从来不显示在
 		addUserPopup(chatTree, getPopupMenu());// 为用户添加弹出菜单
-		scrollPane.setViewportView(chatTree);
-		scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));
+		scrollPane.setViewportView(chatTree);  //设置view里面显示的内容
+		scrollPane.setBorder(new EmptyBorder(0, 0, 0, 0));   //边框
 		chatTree.addMouseListener(new ChatTreeMouseListener());
 		return scrollPane;
 	}
-
+/*
+ * 系统选项卡的面板
+ */
 	private JScrollPane createSysToolPanel() {// 系统工具面板
 		JPanel sysToolPanel = new JPanel(); // 系统工具面板
 		sysToolPanel.setLayout(new BorderLayout());
@@ -303,7 +312,7 @@ public class EQ extends Dialog {
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		sysToolScrollPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 		sysToolScrollPanel.setViewportView(sysToolPanel);
-		sysToolPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		sysToolPanel.setBorder(new BevelBorder(BevelBorder.LOWERED)); //设置面板里面的内容是突出显示还是凹显示
 		JPanel interfacePanel = new JPanel();
 		sysToolPanel.add(interfacePanel, BorderLayout.NORTH);
 		interfacePanel.setLayout(new BorderLayout());
@@ -577,7 +586,9 @@ public class EQ extends Dialog {
 			}
 		}).start();
 	}
-
+/*
+ * 添加用户弹出菜单
+ */
 	private void addUserPopup(Component component, final JPopupMenu popup) {// 添加用户弹出菜单
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -589,7 +600,10 @@ public class EQ extends Dialog {
 				if (e.isPopupTrigger())
 					showMenu(e);
 			}
-
+/*
+ * 本函数就是在点击用户时候弹出来的菜单选项
+ * 显示某些是可以使用和某些功能不可以使用
+ */
 			private void showMenu(MouseEvent e) {
 				if (chatTree.getSelectionPaths() == null) {
 					popupMenu.getComponent(0).setEnabled(false);
@@ -612,10 +626,18 @@ public class EQ extends Dialog {
 			}
 		});
 	}
+	/*
+	 * 存储当前窗体外观在数据库里面
+	 */
 	private void saveLocation() { // 保存主窗体位置的方法
 		location = getBounds();  //获取窗体位置和大小
 		dao.updateLocation(location);   //调用updateLocation方法
 	}
+	
+	/*
+	 * 创建用户弹出菜单，并添加相应的监听函数
+	 * 去执行相应的操作
+	 */
 	protected JPopupMenu getPopupMenu() {// 创建用户弹出菜单
 		if (popupMenu == null) {
 			popupMenu = new JPopupMenu();
@@ -651,25 +673,34 @@ public class EQ extends Dialog {
 		accessPublicFolder.addActionListener(new accessFolderActionListener());
 		return popupMenu;
 	}
-	private void updateProject() { // 程序更新方法
+	/*
+	 * 更新程序版本
+	 * 思路就是:比较程序时间很服务器版本最后修改的时间
+	 */
+	private void updateProject() { 
 		netFilePath = preferences.get("updatePath", "EQ.jar");
-		if (netFilePath.equals("EQ.jar")) {
+		if (netFilePath.equals("EQ.jar")) {  //如果首选项没有升级路径
 			pushMessage("未设置升级路径");
 			return;
 		}
-		netFile = new File(netFilePath);
-		localFile = new File(user_dir + File.separator + "EQ.jar");
+		netFile = new File(netFilePath);  //创建服务器服务对象
+		localFile = new File(user_dir + File.separator + "EQ.jar");  //创建本地文件对象
 		if (localFile != null && netFile != null && netFile.exists()
 				&& localFile.exists()) {
 			Date netDate = new Date(netFile.lastModified());
 			Date localDate = new Date(localFile.lastModified());
 			if (netDate.after(localDate)) {
-				new Thread(new Runnable() {
-					public void run() {
+				new Thread(new Runnable() {  //Thread 线程类
+											 //runnable  线程接口
+					public void run() {  //线程中的方法
 						try {
 							Dialog frameUpdate = new UpdateFrame();
 							frameUpdate.setVisible(true);
 							Thread.sleep(2000);
+							
+							/*
+							 * 一段升级程序
+							 */
 							FileInputStream fis = new FileInputStream(netFile);
 							FileOutputStream fout = new FileOutputStream(
 									localFile);
@@ -689,7 +720,7 @@ public class EQ extends Dialog {
 							e.printStackTrace();
 						}
 					}
-				}).start();
+				}).start();  //开始执行线程
 			} else {
 				showMessageDialog("已经是最新的程序了。");
 			}
