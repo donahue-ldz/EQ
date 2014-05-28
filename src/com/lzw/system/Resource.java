@@ -17,11 +17,14 @@ import javax.swing.JToggleButton;
 import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+
+import sun.misc.OSEnvironment;
+
 import com.lzw.EQ;
 import com.lzw.frame.TelFrame;
 import com.lzw.userList.ChatTree;
 import com.lzw.userList.User;
-/*
+/**
  * 是通信系统中的的工具类，静态方法
  * 
  * 包含功能：
@@ -82,12 +85,15 @@ public class Resource {
 			button.setSelected(false);
 		}
 	}
-	/*
-	 * 登陆模块
+	/**
+	 * 登陆模块，是登陆windows server升级，获取相关的程序
+	 * 将远程文件映射到本地
+	 * net use path password /user:name 一般格式
 	 */
 	public static boolean loginPublic(String user, String pass) {
 		try {
 			String userName = user;
+			//如果没有的话就是null
 			String updatePath = EQ.preferences.get("updatePath", null);
 			if (updatePath == null)
 				return false;
@@ -97,12 +103,20 @@ public class Resource {
 			if (file.isFile())
 				updatePath = file.getParent();
 			if (userName != null && !userName.equals("")) {
-				userName = " /user:" + userName;
+				userName = " /user:" + userName;  //这是登陆window server的用户名的格式
 			}
+			/**
+			 * 本处是windows下路径处理
+			 * 自己可以加一个判断，不同的系统不同的路径和不同命令
+			 * 使用System.getPro*此处默认是Linux下
+			 * String osType=System.getProperty("os.name");
+			 */
+			
+			
 			Process process = Runtime.getRuntime().exec(
 					"cmd /c %windir%" + File.separator + "System32"
 							+ File.separator + "net use " + updatePath + " "
-							+ pass + userName);
+							+ pass + userName);    //这个命令的作用是将远程的文件服务器上的文件映射到updatePath ，具体详解net use
 			System.out.println("cmd /c %windir%" + File.separator + "System32"
 					+ File.separator + "net use " + updatePath + " " + pass
 					+ userName);
@@ -111,6 +125,7 @@ public class Resource {
 			while (sce.hasNextLine()) {
 				stre.append(sce.nextLine());
 			}
+			sce.close();  //文件要记得关闭
 			process.destroy();
 			String resulte = stre.toString();
 			if (resulte.equals(""))
@@ -123,6 +138,11 @@ public class Resource {
 		}
 		return false;
 	}
+	/**
+	 * 群发消息，独立线程发送
+	 * @param selectionPaths
+	 * @param message
+	 */
 	public static void sendGroupMessenger(final TreePath[] selectionPaths,
 			final String message) {// 群发信使信息
 		new Thread(new Runnable() {
@@ -220,10 +240,12 @@ public class Resource {
 		}
 		new Thread(new TheThread(user, message, frame)).start();
 	}
-
+/**
+ * windows 下命令行访问相关文件和程序
+ */
 	public static void startFolder(String str) {
 		try {
-			Runtime.getRuntime().exec("cmd /c start " + str);
+			Runtime.getRuntime().exec("cmd /c start " + str);  //windows访问，在命令行下执行相关的操作
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

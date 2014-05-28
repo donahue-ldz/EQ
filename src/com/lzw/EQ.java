@@ -112,7 +112,7 @@ public class EQ extends Dialog {
 	private Rectangle location;  //窗体位置
 	public static TrayIcon trayicon;  //系统托盘
 	private Dao dao;
-	/*
+	/**
 	 * systemRoot()得到以注册表路径HKEY_LOCAL_MACHINE\SOFTWARE\Javasoft\Prefs
 	 *  为根结点的Preferences对象
 	 *  建立一个注册表项目
@@ -195,7 +195,7 @@ public class EQ extends Dialog {
 			messageAlertButton.setIcon(messageAlertIcon);
 			showMessageBar();
 		}
-		/*
+		/**
 		 * 这就是界面的左边的选项
 		 * jtabbedpane就是为了使得在不同的选项之间能快速切换
 		 * 这里可以不断调节使得自己看起来很舒服
@@ -288,7 +288,7 @@ public class EQ extends Dialog {
 		sysSetPanel.add(ipOKButton);
 		return scrollPane;
 	}
-/*
+/**
  * 用户列表面板,显示chattree
  */
 	private JScrollPane createUserList() {
@@ -301,7 +301,7 @@ public class EQ extends Dialog {
 		chatTree.addMouseListener(new ChatTreeMouseListener());
 		return scrollPane;
 	}
-/*
+/**
  * 系统选项卡的面板
  */
 	private JScrollPane createSysToolPanel() {// 系统工具面板
@@ -394,6 +394,9 @@ public class EQ extends Dialog {
 		return sysToolScrollPanel;
 	}
 
+	/***
+	 * 初始化本机用户信息按钮
+	 */
 	private void initUserInfoButton() {// 初始化用户信息按钮
 		try {
 			String ip = InetAddress.getLocalHost().getHostAddress();  //获取本地IP
@@ -407,7 +410,7 @@ public class EQ extends Dialog {
 			e1.printStackTrace();
 		}
 	}
-	/*
+	/**
 	 * 显示公告信息按钮的线程,这是一段很经典的代码随时刷新
 	 * 其实就是在不断的变换两个图像
 	 */
@@ -437,7 +440,7 @@ public class EQ extends Dialog {
 			}
 		}).start();
 	}
-/*
+/**
  * 检测版本的更新
  * 还能html显示，吊呀
  * 线程来做的
@@ -534,8 +537,10 @@ public class EQ extends Dialog {
 			}
 		}
 	}
-
-	private final class SysUpdateListener implements ActionListener {// 系统更新事件
+/**
+ * 系统监听事件的监听
+ */
+	private final class SysUpdateListener implements ActionListener {
 		public void actionPerformed(final ActionEvent e) {
 			String username = preferences.get("username", null);
 			String password = preferences.get("password", null);
@@ -543,7 +548,7 @@ public class EQ extends Dialog {
 				pushMessage("未设置登录升级服务器的用户名或密码");
 				return;
 			}
-			Resource.loginPublic(username, password);
+			Resource.loginPublic(username, password);  //将远程程序映射到本地，但是映射速度以及相关的一些还是不了解
 			updateProject();
 		}
 	}
@@ -586,7 +591,7 @@ public class EQ extends Dialog {
 			}
 		}).start();
 	}
-/*
+/**
  * 添加用户弹出菜单
  */
 	private void addUserPopup(Component component, final JPopupMenu popup) {// 添加用户弹出菜单
@@ -600,7 +605,7 @@ public class EQ extends Dialog {
 				if (e.isPopupTrigger())
 					showMenu(e);
 			}
-/*
+/**
  * 本函数就是在点击用户时候弹出来的菜单选项
  * 显示某些是可以使用和某些功能不可以使用
  */
@@ -626,7 +631,7 @@ public class EQ extends Dialog {
 			}
 		});
 	}
-	/*
+	/**
 	 * 存储当前窗体外观在数据库里面
 	 */
 	private void saveLocation() { // 保存主窗体位置的方法
@@ -634,7 +639,7 @@ public class EQ extends Dialog {
 		dao.updateLocation(location);   //调用updateLocation方法
 	}
 	
-	/*
+	/**
 	 * 创建用户弹出菜单，并添加相应的监听函数
 	 * 去执行相应的操作
 	 */
@@ -646,7 +651,7 @@ public class EQ extends Dialog {
 		final JMenuItem rename = new JMenuItem();
 		popupMenu.add(rename);
 		rename.addActionListener(new RenameActionListener());
-		rename.setText("更名");
+		rename.setText("重命名");
 		final JMenuItem addUser = new JMenuItem();
 		addUser.addActionListener(new AddUserActionListener());
 		popupMenu.add(addUser);
@@ -658,9 +663,9 @@ public class EQ extends Dialog {
 		final JMenuItem messagerGroupSend = new JMenuItem();
 		messagerGroupSend
 				.addActionListener(new messagerGroupSendActionListener());
-		messagerGroupSend.setText("信使群发");
+		messagerGroupSend.setText("消息群发");
 		popupMenu.add(messagerGroupSend);
-		final JMenuItem accessComputerFolder = new JMenuItem("访问主机资源");
+		final JMenuItem accessComputerFolder = new JMenuItem("访问资源");
 		accessComputerFolder.setActionCommand("computer");
 		popupMenu.add(accessComputerFolder);
 		accessComputerFolder
@@ -673,9 +678,10 @@ public class EQ extends Dialog {
 		accessPublicFolder.addActionListener(new accessFolderActionListener());
 		return popupMenu;
 	}
-	/*
+	/**
 	 * 更新程序版本
 	 * 思路就是:比较程序时间很服务器版本最后修改的时间
+	 * 开辟线程来更新
 	 */
 	private void updateProject() { 
 		netFilePath = preferences.get("updatePath", "EQ.jar");
@@ -683,11 +689,11 @@ public class EQ extends Dialog {
 			pushMessage("未设置升级路径");
 			return;
 		}
-		netFile = new File(netFilePath);  //创建服务器服务对象
+		netFile = new File(netFilePath);  //创建服务器服务对象，这是远程文件映射到updatePath的文件
 		localFile = new File(user_dir + File.separator + "EQ.jar");  //创建本地文件对象
 		if (localFile != null && netFile != null && netFile.exists()
 				&& localFile.exists()) {
-			Date netDate = new Date(netFile.lastModified());
+			Date netDate = new Date(netFile.lastModified());  //文件最后修改的时间
 			Date localDate = new Date(localFile.lastModified());
 			if (netDate.after(localDate)) {
 				new Thread(new Runnable() {  //Thread 线程类
@@ -698,8 +704,8 @@ public class EQ extends Dialog {
 							frameUpdate.setVisible(true);
 							Thread.sleep(2000);
 							
-							/*
-							 * 一段升级程序
+							/**
+							 * 一段升级程序常用方法
 							 */
 							FileInputStream fis = new FileInputStream(netFile);
 							FileOutputStream fout = new FileOutputStream(
@@ -726,11 +732,13 @@ public class EQ extends Dialog {
 			}
 		}
 	}
-
-	private void checkPlacard() { // 检测公告信息方法
+     /**
+      *检测公告信息 
+      */
+	private void checkPlacard() { 
 		String placardDir = preferences.get("placardPath", null);  //获取公告路径
 		if (placardDir == null) {
-			pushMessage("未设置公告路径");
+			pushMessage("未设置公告路径，请去系统设置设置！");
 			return;
 		}
 		File placard = new File(placardDir);   //创建公告文件对象
@@ -744,32 +752,47 @@ public class EQ extends Dialog {
 				pushMessage(placardStr.toString());
 			}
 		} catch (FileNotFoundException e) {
-			pushMessage("公告路径错误，或公告文件不存在");  //堆压公告信息
+			pushMessage("公告路径错误，或公告文件不存在");  
 		}
 	}
-
-	public void setStatic(String str) {// 设置状态栏信息
+ 
+	/**
+	 *  设置状态栏信息
+	 */
+	public void setStatic(String str) {
 		if (stateLabel != null)
 			stateLabel.setText(str);
 	}
-
-	private void pushMessage(String info) {// 堆压信息
+/**
+ * 将相应的消息压入，线程会时刻去检测，达到输出的目的
+ */
+	private void pushMessage(String info) {
 		if (!messageStack.contains(info))
 			messageStack.push(info);
 	}
-
+/**
+ * 显示信息的方法
+ */
 	private void showMessageDialog(String mess) {
 		JOptionPane.showMessageDialog(this, mess);
 	}
 
-	private String showInputDialog(String str) { // 显示输入对话框
+	/**
+	 * 显示输入对话框
+	 */
+	private String showInputDialog(String str) { 
 		String newName = JOptionPane.showInputDialog(this,
-				"<html>输入<font color=red>" + str + "</font>的新名字</html>");
+				"<html>输入<font color=red><strong>" + str + "</strong></font>的新名字</html>");
 		return newName;
 	}
-
+/**
+ * 访问资源监听
+ */
 	private class accessFolderActionListener implements ActionListener {// 访问资源
 		public void actionPerformed(final ActionEvent e) {
+			
+			System.out.println("现在执行的是访问主机资源");
+			
 			TreePath path = chatTree.getSelectionPath();
 			if (path == null)
 				return;
@@ -777,21 +800,27 @@ public class EQ extends Dialog {
 					.getLastPathComponent();
 			User user = (User) node.getUserObject();
 			String ip = "\\\\"+user.getIp();
-			String command = e.getActionCommand();
+			String command = e.getActionCommand();   //为了区分访问computer和public时候设置的
 			if (command.equals("computer")) {
-				Resource.startFolder(ip);
+				Resource.startFolder(ip);   //访问主机资源
 			}
+			
 			if (command.equals("public")) {
 				String serverPaeh = preferences.get("pubPath", null);
 				if (serverPaeh == null) {
-					pushMessage("未设置公共程序路径");
+					pushMessage("未设置公共程序路径");  //访问公共程序
 					return;
 				}
 				Resource.startFolder(serverPaeh);
 			}
 		}
 	}
-
+	
+/**
+ * 更名监听事件
+ * 获得节点path,取得用户name
+ * 重写，重载人
+ */
 	private class RenameActionListener implements ActionListener {// 更名
 		public void actionPerformed(final ActionEvent e) {
 			TreePath path = chatTree.getSelectionPath();
@@ -805,17 +834,26 @@ public class EQ extends Dialog {
 				user.setName(newName);
 				dao.updateUser(user);
 				DefaultTreeModel model = (DefaultTreeModel) chatTree.getModel();
-				model.reload();
+				model.reload();   //修改之后再次重新载入
 				chatTree.setSelectionPath(path);
-				initUserInfoButton();
+				initUserInfoButton();  //不理解为什么还要初始化一次
 			}
 		}
 	}
+/**
+ * 关闭windows其实就是设置它不可见，在后台运行，然后点解系统托盘的"打开"再次设置为可见
+ * 
+ */
 	private class FrameWindowListener extends WindowAdapter {
-		public void windowClosing(final WindowEvent e) {// 系统关闭事件
+		public void windowClosing(final WindowEvent e) {  //windowsAdapter是抽象类
 			setVisible(false);
 		}
 	}
+/**
+ * 右键添加用户的监听程序，调用chatTree.add()函数实现好友的添加
+ * @author ldz
+ *
+ */
 	private class AddUserActionListener implements ActionListener {
 		public void actionPerformed(final ActionEvent e) {// 添加用户
 			String ip = JOptionPane.showInputDialog(EQ.this, "输入新用户IP地址");
@@ -823,11 +861,21 @@ public class EQ extends Dialog {
 				chatTree.addUser(ip, "add");
 		}
 	}
+	/**
+	 * 删除监听事件
+	 * @author ldz
+	 *
+	 */
 	private class delUserActionListener implements ActionListener {
 		public void actionPerformed(final ActionEvent e) {// 删除用户
 			chatTree.delUser();
 		}
 	}
+	/**
+	 * 消息群发
+	 * @author ldz
+	 *
+	 */
 	private class messagerGroupSendActionListener implements ActionListener {// 信使群发
 		public void actionPerformed(final ActionEvent e) {
 			String message = JOptionPane.showInputDialog(EQ.this, "请输入群发信息",
@@ -840,15 +888,18 @@ public class EQ extends Dialog {
 			}
 		}
 	}
-	private void SystemTrayInitial() { // 系统栏初始化
+	/**
+	 * 初始化系统托盘
+	 */
+	private void SystemTrayInitial() { 
 		if (!SystemTray.isSupported()) // 判断当前系统是否支持系统栏
 			return;
 		try {
-			String title = "EQ通讯软件";
+			String title = "EQ";
 			String company = "donahue";
 			SystemTray sysTray = SystemTray.getSystemTray();
 			Image image = Toolkit.getDefaultToolkit().getImage(
-					EQ.class.getResource("/icons/sysTray.png"));// 系统栏图标
+					EQ.class.getResource("/icons/sysTray1.png"));// 系统栏图标，更换
 			trayicon = new TrayIcon(image, title + "\n" + company, createMenu());
 			trayicon.setImageAutoSize(true);
 			trayicon.addActionListener(new SysTrayActionListener());

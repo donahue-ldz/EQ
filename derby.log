@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-2014-05-27 12:59:17.635 GMT:
- Booting Derby version The Apache Software Foundation - Apache Derby - 10.4.2.1 - (706043): instance a816c00e-0146-3dc3-70bc-000002b5b940
+2014-05-28 09:13:25.629 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.4.2.1 - (706043): instance a816c00e-0146-421b-02c8-000002b8c040
 on database directory /home/ldz/Git/EQ/db_EQ  
 
 Database Class Loader started - derby.database.classpath=''

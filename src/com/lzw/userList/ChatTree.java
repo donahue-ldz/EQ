@@ -16,8 +16,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import com.lzw.EQ;
 import com.lzw.dao.Dao;
-/*
- * 继承jtree类，实现自定义树控件
+/**
+ * 继承Jtree类，实现自定义树控件
  * 使用之前定义的树节点渲染器
  * 调用sortUser（）添加并且显示用户列表
  */
@@ -46,16 +46,21 @@ public class ChatTree extends JTree {
 		sortUsers();
 		this.eq = eq;
 	}
-	/*
+	/**
 	 * 主体是一个内部线程
+	 * 首先是移除所有节点用户
+	 * 然后再次建立Tree
 	 * 首先获得本地用户
+	 * 然后在次去数据库里面取所有好友
+	 * 
+	 * 没有实现按照字母或者IP大小先后排序
 	 *这个写法感觉好高深呀！！！！
 	 */
 	private synchronized void sortUsers() {//排序用户列表
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-					Thread.sleep(100);  //线程休眠100秒
+					Thread.sleep(100);  //线程休眠100毫秒
 					root.removeAllChildren();
 					String ip = InetAddress.getLocalHost().getHostAddress();  //获取本地ip
 					User localUser = dao.getUser(ip);
@@ -64,7 +69,7 @@ public class ChatTree extends JTree {
 								localUser);
 						root.add(node);
 					}
-					userMap = dao.getUsers();    //获取数据库中所以用户
+					userMap = dao.getUsers();    //获取数据库中所有用户
 					Iterator<User> iterator = userMap.iterator();
 					while (iterator.hasNext()) { // 从集合中装载用户信息
 						User user = iterator.next();
@@ -73,16 +78,17 @@ public class ChatTree extends JTree {
 						root.add(new DefaultMutableTreeNode(user));   //添加用户到根节点
 					}
 					treeModel.reload();
+					
 					ChatTree.this.setSelectionRow(0);  //使得第一个节点被选中
 					if (eq != null)
-						eq.setStatic("　　总人数：" + getRowCount());  //更新状态栏标签
+						eq.setStatic("　　好友人数：" + getRowCount());  //更新状态栏标签
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}).start();
 	}
-	/*
+	/**
 	 * 首先获取选择的树节点，选择绑定的对象，然后删除
 	 */
 	public void delUser() { // 删除用户
@@ -100,14 +106,20 @@ public class ChatTree extends JTree {
 			treeModel.reload();
 		}
 	}
-	public boolean addUser(String ip, String opration) {// 添加用户
+	/**
+	 * 添加用户
+	 * @param ip
+	 * @param opration
+	 * @return  BOOLEAN OR FALSE
+	 */
+	public boolean addUser(String ip, String opration) {
 		try {
 			if (ip == null)
 				return false;
 			User oldUser = dao.getUser(ip);
 			if (oldUser == null) {// 如果数据库中不存在该用户
 				InetAddress addr = InetAddress.getByName(ip);
-				if (addr.isReachable(1500)) {
+				if (addr.isReachable(1500)) {   //isReachable(million*)表示判断能否是可通信的ICMP
 					String host = addr.getHostName();
 					root.add(new DefaultMutableTreeNode(new User(host, ip)));
 					User newUser = new User();
@@ -116,14 +128,14 @@ public class ChatTree extends JTree {
 					newUser.setName(host);
 					newUser.setIcon("1.gif");  //默认的ICON
 					dao.addUser(newUser);
-					sortUsers();
+					sortUsers();  //重新排序
 					if (!opration.equals("search"))
 						JOptionPane.showMessageDialog(EQ.frame, "用户" + host
 								+ "添加成功", "添加用户",
 								JOptionPane.INFORMATION_MESSAGE);
 					return true;
 					
-				} else {
+				} else {  //addr.isReachable(1500)不可以到达  
 					if (!opration.equals("search"))
 						JOptionPane.showMessageDialog(EQ.frame, "检测不到用户IP："
 								+ ip, "错误添加用户", JOptionPane.ERROR_MESSAGE);
@@ -143,7 +155,7 @@ public class ChatTree extends JTree {
 	public DefaultTreeModel getTreeModel() {
 		return treeModel;
 	}
-	/*
+	/**
 	 * 鼠标监听事件
 	 * 
 	 */
