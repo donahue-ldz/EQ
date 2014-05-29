@@ -872,7 +872,8 @@ public class EQ extends Dialog {
 		}
 	}
 	/**
-	 * 消息群发
+	 * 消息群发监听程序
+	 * 在windowsXP上直接调用net send 发送消息
 	 * @author ldz
 	 *
 	 */
