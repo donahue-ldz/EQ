@@ -872,8 +872,15 @@ public class EQ extends Dialog {
 		}
 	}
 	/**
+<<<<<<< HEAD
 	 * 消息群发监听程序
 	 * 在windowsXP上直接调用net send 发送消息
+=======
+	 * 消息群发监听，调用resource累sendGroupMessenge函数
+	 * 调用系统的net send 但是只是windowsXP才可以
+	 * windows7&8 msg发送有限制
+	 * 待解决
+>>>>>>> 0f7a4298de413ff6f70f388bc67d924b94438f3c
 	 * @author ldz
 	 *
 	 */
@@ -910,7 +917,10 @@ public class EQ extends Dialog {
 			e.printStackTrace();
 		}
 	}
-	private PopupMenu createMenu() { // 创建系统栏菜单的方法
+	/**
+	 *创建系统栏菜单的方法
+	 */
+	private PopupMenu createMenu() { 
 		PopupMenu menu = new PopupMenu();
 		MenuItem exitItem = new MenuItem("退出");
 		exitItem.addActionListener(new ActionListener() { // 系统栏退出事件
@@ -929,7 +939,7 @@ public class EQ extends Dialog {
 					}
 				});
 
-		// 系统栏的访问服务器菜单项事件
+		// 系统栏的访问服务器菜单项事件(本机就是服务器)
 		MenuItem publicItem = new MenuItem("访问服务器");
 		publicItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -947,7 +957,12 @@ public class EQ extends Dialog {
 		menu.add(exitItem);
 		return menu;
 	}
-	class SysTrayActionListener implements ActionListener {// 系统栏双击事件
+	/**
+	 * 系统栏双击事件,就是在任务栏双击设置主窗体可见
+	 * @author 德钊
+	 *
+	 */
+	class SysTrayActionListener implements ActionListener {// 
 		public void actionPerformed(ActionEvent e) {
 			setVisible(true);
 			toFront();

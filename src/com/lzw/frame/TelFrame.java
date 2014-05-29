@@ -13,6 +13,11 @@ import com.lzw.dao.Dao;
 import com.lzw.system.Resource;
 import com.lzw.userList.ChatTree;
 import com.lzw.userList.User;
+/**
+ * 这是聊天时候的界面
+ * @author 德钊
+ *
+ */
 public class TelFrame extends JFrame {
 	private Dao dao;
 	private User user;

@@ -139,7 +139,7 @@ public class Resource {
 		return false;
 	}
 	/**
-	 * 群发消息，独立线程发送
+	 * 群发消息，独立线程发送，独立消息框
 	 * @param selectionPaths
 	 * @param message
 	 */
