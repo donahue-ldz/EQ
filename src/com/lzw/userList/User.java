@@ -4,7 +4,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import com.lzw.EQ;
-/*
+/**
  * IP+头像+用户名+提示文本主机名称
  * 
  */
@@ -40,7 +40,7 @@ public class User {
 	public String getIcon() {
 		return icon;
 	}
-	/*
+	/**
 	 * 不理解
 	 */
 	public Icon getIconImg() {// 获取头像图片

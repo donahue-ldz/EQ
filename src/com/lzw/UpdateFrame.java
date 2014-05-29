@@ -10,9 +10,9 @@ import javax.swing.border.BevelBorder;
 
 public class UpdateFrame extends Dialog {
 	/**
-	 * 
+	 * 本程序是更新时候的窗口的变化
 	 */
-	private static final long serialVersionUID = -5140620475440199136L;
+	private static final long serialVersionUID = -5140620475440199136L;  //序列化，版本的兼容性
 
 	public UpdateFrame() {
 		super(new Frame());
