@@ -140,6 +140,7 @@ public class Resource {
 	}
 	/**
 	 * 群发消息，独立线程发送，独立消息框
+	 * 使用windowsXP的net send 
 	 * @param selectionPaths
 	 * @param message
 	 */
@@ -194,6 +195,10 @@ public class Resource {
 			}
 		}).start();
 	}
+	/**
+	 * 发送信使到指定操作系统，当通信对方没有使用EQ时候调用此发送
+	 * 
+	 */
 	public static void sendMessenger(User user, String message, TelFrame frame) {// 发送信使信息
 		class TheThread implements Runnable {
 			private User user;
@@ -216,23 +221,23 @@ public class Resource {
 					int i, j;
 					StringBuilder sb = new StringBuilder();
 					while ((i = is.read()) != -1) {
-						sb.append((char) i);
+						sb.append((char) i);  //获取信使发送结果
 					}
 					String runIs = new String(sb.toString().getBytes(
 							"iso-8859-1")).trim().replace(user.getIp(),
-							user.getName());
+							user.getName());  //将信息转码
 					InputStream eis = process.getErrorStream();
 					StringBuilder esb = new StringBuilder();
 					while ((j = eis.read()) != -1) {
-						esb.append((char) j);
+						esb.append((char) j);  //获取信使发送的错误
 					}
 					String runEis = new String(esb.toString().getBytes(
 							"iso-8859-1")).trim().replace(user.getIp(),
-							user.getName());
-					frame.appendReceiveText(runIs, new Color(187, 30, 193));
-					if (runEis.length() > 0)
-						frame.appendReceiveText(runIs, Color.RED);
-					sendButton.setEnabled(true);
+							user.getName());  //错误信息转码
+					frame.appendReceiveText(runIs, new Color(187, 30, 193));  //显示信使发送结果
+					if (runEis.length() > 0)  //如果存在错误信息
+						frame.appendReceiveText(runIs, Color.RED);  //提示发送失败
+					sendButton.setEnabled(true);  //恢复发送按钮状态
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

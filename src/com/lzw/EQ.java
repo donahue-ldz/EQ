@@ -150,7 +150,7 @@ public class EQ extends Dialog {
 		user_dir = System.getProperty("user.dir"); // 程序执行路径用于系统更新，用户当前路径EQ
 		localFile = new File(user_dir + File.separator + "EQ.jar");// 本地EQ文件
 		stateLabel = new JLabel(); // 状态栏标签
-		addWindowListener(new FrameWindowListener());// 添加窗体监视器
+		addWindowListener(new FrameWindowListener());// 添加窗体监视器ible(false);
 		addComponentListener(new ComponentAdapter() {
 			public void componentResized(final ComponentEvent e) {   //当窗体改变大小时候
 				saveLocation();
@@ -572,7 +572,9 @@ public class EQ extends Dialog {
 			}
 		}
 	}
-
+/**
+ * 线程接受聊天消息 UDP
+ */
 	private void server() {// 服务器启动方法
 		new Thread(new Runnable() {
 			public void run() {
@@ -585,6 +587,7 @@ public class EQ extends Dialog {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
+						//接收到消息之后显示
 						TelFrame.getInstance(ss, dp, chatTree);
 					}
 				}
@@ -778,7 +781,7 @@ public class EQ extends Dialog {
 	}
 
 	/**
-	 * 显示输入对话框
+	 * 显示输入更名的对话框
 	 */
 	private String showInputDialog(String str) { 
 		String newName = JOptionPane.showInputDialog(this,
@@ -786,13 +789,16 @@ public class EQ extends Dialog {
 		return newName;
 	}
 /**
- * 访问资源监听
+ * 访问资源监听,现在还不完善，先暂时搁置
  */
 	private class accessFolderActionListener implements ActionListener {// 访问资源
 		public void actionPerformed(final ActionEvent e) {
 			
 			System.out.println("现在执行的是访问主机资源");
-			
+			if(true){
+			showMessageDialog("现在次功能还不完善，搁置！");
+			return ;
+			}
 			TreePath path = chatTree.getSelectionPath();
 			if (path == null)
 				return;
@@ -846,6 +852,10 @@ public class EQ extends Dialog {
  */
 	private class FrameWindowListener extends WindowAdapter {
 		public void windowClosing(final WindowEvent e) {  //windowsAdapter是抽象类
+			int response=JOptionPane
+					.showConfirmDialog(frame, "你确定关闭", "提示", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					if(response==JOptionPane.NO_OPTION)
+						return ;
 			setVisible(false);
 		}
 	}
@@ -940,7 +950,9 @@ public class EQ extends Dialog {
 				});
 
 		// 系统栏的访问服务器菜单项事件(本机就是服务器)
-		MenuItem publicItem = new MenuItem("访问服务器");
+		MenuItem publicItem = 
+
+new MenuItem("访问服务器");
 		publicItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String serverPaeh = preferences.get("pubPath", null);
